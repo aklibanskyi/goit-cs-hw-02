@@ -1,1 +1,27 @@
+# 1. Визначення списку вебсайтів для перевірки
+websites=(
+    "https://google.com"
+    "https://facebook.com"
+    "https://twitter.com"
+)
 
+# 2. Назва файлу для збереження логів
+log_file="website_status.log"
+
+# Очищення або створення порожнього файлу логів перед початком перевірки
+> "$log_file"
+
+# 3. Обхід списку адрес у циклі та перевірка доступності
+for site in "${websites[@]}"; do
+    status_code=$(curl -s -o /dev/null -L -w "%{http_code}" --connect-timeout 5 "$site")
+
+    # Перевірка отриманого коду: статус 200 свідчить про доступність
+    if [ "$status_code" -eq 200 ]; then
+        echo "<$site> is UP" >> "$log_file"
+    else
+        echo "<$site> is DOWN" >> "$log_file"
+    fi
+done
+
+# 4. Виведення фінального повідомлення
+echo "Результати записано у файл логів: $log_file"
